@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edu Tracker</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}
+header{background:#fff;border-bottom:1px solid #e7eaf0;padding:18px 20px;position:sticky;top:0;z-index:2}
+.logo{font-size:25px;font-weight:800}.logo span{color:#4f46e5}
+.container{max-width:1000px;margin:auto;padding:24px 16px}
+.hero{background:#4f46e5;color:white;border-radius:20px;padding:28px;margin-bottom:20px}
+.hero h1{margin:0 0 8px;font-size:30px}.hero p{margin:0;opacity:.9}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.card{background:white;border-radius:16px;padding:20px;box-shadow:0 5px 20px rgba(20,30,60,.06)}
+.card h2{font-size:18px;margin-top:0}.big{font-size:30px;font-weight:800}
+.progress{height:10px;background:#e9edf5;border-radius:20px;overflow:hidden}.bar{height:100%;background:#4f46e5;border-radius:20px}
+button{border:0;background:#4f46e5;color:white;padding:11px 16px;border-radius:10px;font-weight:700;cursor:pointer}
+button.secondary{background:#eef0ff;color:#4f46e5}
+input{width:100%;padding:11px;border:1px solid #dfe3eb;border-radius:10px;margin:6px 0 12px}
+.timer{text-align:center}.timer .big{font-size:44px;margin:10px}
+.subject{margin:14px 0}.row{display:flex;justify-content:space-between;gap:10px}
+footer{text-align:center;color:#7a8190;padding:30px}
+</style>
+</head>
+<body>
+<header><div class="logo">Edu <span>Tracker</span></div></header>
+<div class="container">
+<section class="hero">
+<h1>Study smarter. Track your progress.</h1>
+<p>Your simple student dashboard for goals, focus sessions and test performance.</p>
+</section>
+
+<div class="grid">
+<div class="card">
+<h2>Today's Goal</h2>
+<input id="goal" placeholder="e.g. Finish Biology chapter 3">
+<button onclick="saveGoal()">Save Goal</button>
+<p id="goalText"></p>
+</div>
+
+<div class="card timer">
+<h2>Focus Timer</h2>
+<div class="big" id="timer">25:00</div>
+<button onclick="startTimer()">Start</button>
+<button class="secondary" onclick="resetTimer()">Reset</button>
+</div>
+
+<div class="card">
+<h2>NEET Score Calculator</h2>
+<input id="correct" type="number" min="0" placeholder="Correct answers">
+<input id="wrong" type="number" min="0" placeholder="Wrong answers">
+<button onclick="calculate()">Calculate</button>
+<p id="score"></p>
+</div>
+
+<div class="card">
+<h2>Study Progress</h2>
+<div class="subject"><div class="row"><b>Physics</b><span>70%</span></div><div class="progress"><div class="bar" style="width:70%"></div></div></div>
+<div class="subject"><div class="row"><b>Chemistry</b><span>75%</span></div><div class="progress"><div class="bar" style="width:75%"></div></div></div>
+<div class="subject"><div class="row"><b>Biology</b><span>85%</span></div><div class="progress"><div class="bar" style="width:85%"></div></div></div>
+</div>
+</div>
+
+<div class="card" style="margin-top:16px">
+<h2>Test Score Tracker</h2>
+<div class="row">
+<input id="testName" placeholder="Test name">
+<input id="testScore" type="number" placeholder="Score">
+<button onclick="addTest()">Add</button>
+</div>
+<ul id="tests"></ul>
+</div>
+</div>
+
+<footer>Edu Tracker • Built for students</footer>
+
+<script>
+let seconds=1500, interval=null;
+function render(){let m=String(Math.floor(seconds/60)).padStart(2,'0'),s=String(seconds%60).padStart(2,'0');document.getElementById('timer').textContent=m+':'+s}
+function startTimer(){if(interval)return;interval=setInterval(()=>{if(seconds>0){seconds--;render()}else{clearInterval(interval);interval=null;alert('Focus session complete!')}},1000)}
+function resetTimer(){clearInterval(interval);interval=null;seconds=1500;render()}
+function saveGoal(){let g=document.getElementById('goal').value;localStorage.goal=g;document.getElementById('goalText').textContent=g?'Saved: '+g:''}
+function calculate(){let c=+document.getElementById('correct').value||0,w=+document.getElementById('wrong').value||0;document.getElementById('score').textContent='Score: '+(4*c-w)+' / 720'}
+function addTest(){let n=document.getElementById('testName').value,s=document.getElementById('testScore').value;if(!n||s==='')return;let a=JSON.parse(localStorage.tests||'[]');a.push({n,s});localStorage.tests=JSON.stringify(a);renderTests();document.getElementById('testName').value='';document.getElementById('testScore').value=''}
+function renderTests(){let a=JSON.parse(localStorage.tests||'[]');document.getElementById('tests').innerHTML=a.map(x=>`<li>${x.n}: <b>${x.s}</b></li>`).join('')}
+document.getElementById('goalText').textContent=localStorage.goal?'Saved: '+localStorage.goal:'';renderTests();render();
+</script>
+</body>
+</html>
